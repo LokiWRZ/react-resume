@@ -1,7 +1,7 @@
 const Validator = require('validator');
 const isEmpty = require("./is-empty");
 
-module.exports = function validateProfileInptu(data) {
+module.exports = function validateProfileInput(data) {
   let errors = {};
 
   data.handle = !isEmpty(data.handle) ? data.handle : '';
@@ -12,38 +12,38 @@ module.exports = function validateProfileInptu(data) {
     errors.handle = "Username's length cannot less than 2 or more than 40 degrees!";
   }
 
-  if(!Validator.isEmpty(data.handle)){
+  if(Validator.isEmpty(data.handle)){
     errors.handle = "handle cannot be null!";
   }
 
-  if(!Validator.isEmpty(data.status)){
+  if(Validator.isEmpty(data.status)){
     errors.status = "status cannot be null!";
   }
 
-  if(!Validator.isEmpty(data.skills)){
-    errors.skills = "skills cannno be null!";
+  if(Validator.isEmpty(data.skills)){
+    errors.skills = "skills cannot be null!";
   }
 
   if(!isEmpty(data.website)){
     if(!Validator.isURL(data.website)){
-      errors.website = "url is illegal!";
+      errors.website = "url is invalid";
     }
   }
 
   if(!isEmpty(data.tengxunkt)){
     if(!Validator.isURL(data.tengxunkt)){
-      errors.tengxunkt = "url is illegal!";
+      errors.tengxunkt = "url is invalid";
     }
   }
 
   if(!isEmpty(data.wangyikt)){
     if(!Validator.isURL(data.wangyikt)){
-      errors.wangyikt = "url is illegal!";
+      errors.wangyikt = "url is invalid";
     }
   }
 
   return {
     errors,
     isValid:isEmpty(errors)
-  }
+  };
 }

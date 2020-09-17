@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
+class Landing extends Component {
 
-export class Landing extends Component {
-  //render page
   componentDidMount() {
-    //if auth, jump to control page
-    if(this.props.auth.isAuthenticated) {
-      this.props.history.push('/dashboard')
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
     }
   }
+
   render() {
     return (
       <div className="landing">
@@ -17,11 +17,10 @@ export class Landing extends Component {
           <div className="container">
             <div className="row">
               <div className="col-md-12 text-center">
-                <h1 className="display-3 mb-4">
-                  My Front-end
-                </h1>
-                <p className="lead">Focus on study, be serious! </p>
-                <hr/>
+                <h1 className="display-3 mb-4">FrontEnd Online
+            </h1>
+                <p className="lead"> Focus on frontEnd, be professional! </p>
+                <hr />
                 <Link to="/register" className="btn btn-lg btn-info mr-2">Register</Link>
                 <Link to="/login" className="btn btn-lg btn-light">Login</Link>
               </div>
@@ -32,14 +31,13 @@ export class Landing extends Component {
     )
   }
 }
-// Get the property value of initalState which have defined in actions in reduce
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-})
-// dispatch function
-const mapDispatchToProps = (dispatch) => {
-  return {
 
-  }
+Landing.propTypes = {
+  auth: PropTypes.object.isRequired
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Landing);
+
+const mapStateToProps = state => ({
+  auth: state.auth
+})
+
+export default connect(mapStateToProps)(Landing);

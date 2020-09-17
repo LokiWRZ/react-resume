@@ -1,62 +1,86 @@
-// Create personal info
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createProfile } from '../../actions/profileActions';
-// withRouter trapper the route jump in actions
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import TextFieldGroup from '../../common/TextFieldGroup';
 import TextAreaFieldGroup from '../../common/TextAreaFieldGroup';
 import SelectListGroup from '../../common/SelectListGroup';
 import InputGroup from '../../common/InputGroup';
-
+import { createProfile } from '../../actions/profileActions';
 class CreateProfile extends Component {
-  state = {
-    displaySocialInputs: false, // display content about add social account
-    errors: {},
-    handle: '',
-    company: '',
-    website: '',
-    location: '',
-    status: '',
-    skills: '',
-    githubusername: '',
-    bio: '',
-    wechat: '',
-    QQ: '',
-    tengxunkt: '',
-    wangyikt: '',
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      displaySocialInputs: false,
+      handle: '',
+      company: '',
+      website: '',
+      location: '',
+      status: '',
+      skills: '',
+      githubusername: '',
+      bio: '',
+      wechat: '',
+      QQ: '',
+      tengxunkt: '',
+      wangyikt: '',
+      errors: {}
+    };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
-  // function of life cycle
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    // give the returned error to state before renew/render
-    if(nextProps.errors) {
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const profileData = {
+      handle: this.state.handle,
+      company: this.state.company,
+      website: this.state.website,
+      location: this.state.location,
+      status: this.state.status,
+      skills: this.state.skills,
+      githubusername: this.state.githubusername,
+      bio: this.state.bio,
+      wechat: this.state.wechat,
+      QQ: this.state.QQ,
+      tengxunkt: this.state.tengxunkt,
+      wangyikt: this.state.wangyikt,
+    };
+
+    // console.log(profileData);
+
+    this.props.createProfile(profileData, this.props.history);
+
+  }
+
+  // 生命周期函数
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
       this.setState({
         errors: nextProps.errors
       })
     }
   }
-  onSubmit = (e) => {
-    e.preventDefault()
-    // give the rest array to a varity
-    let { displaySocialInputs, errors, ...profileData } =this.state
-    //initiate the require
-    this.props.createProfile(profileData, this.props.history)
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
-  onChange = (e) => {
-    // require the content by each input, change status
-    this.setState({ [e.target.name]: e.target.value })
-  }
+
   render() {
-    let { errors, displaySocialInputs } = this.state;
-    // Define content of add social account
+    const { errors, displaySocialInputs } = this.state;
+
     let socialInputs;
-    if(displaySocialInputs) {
+
+    if (displaySocialInputs) {
       socialInputs = (
         <div>
-          <InputGroup 
+          <InputGroup
             placeholder="wechat public account"
             name="wechat"
-            icon="fab fa-wexin"
+            icon="fab fa-weixin"
             value={this.state.wechat}
             onChange={this.onChange}
             error={errors.wechat}
@@ -72,16 +96,16 @@ class CreateProfile extends Component {
           />
 
           <InputGroup
-            placeholder="Tengxun cloud course"
+            placeholder="tengxunkt"
             name="tengxunkt"
-            icon="fat fa-wechat"
+            icon="fab fa-wechat"
             value={this.state.tengxunkt}
             onChange={this.onChange}
             error={errors.tengxunkt}
           />
 
           <InputGroup
-            placeholder="Wangyi cloud course"
+            placeholder="Wnagyikt"
             name="wangyikt"
             icon="fab fa-wechat"
             value={this.state.wangyikt}
@@ -89,36 +113,38 @@ class CreateProfile extends Component {
             error={errors.wangyikt}
           />
         </div>
-      )
+      );
     }
+
     const options = [
-      { label: "* pleace select your occupation", value: "* pleace select your occupation" },
+      { label: "* Please your occupation", value: "* Please your occupation" },
       { label: 'Junior Developer', value: 'Junior Developer' },
       { label: 'Senior Developer', value: 'Senior Developer' },
       { label: 'HighDeveloper', value: 'HighDeveloper' },
       { label: 'Manager', value: 'Manager' },
-      { label: 'Backend Developer', value: 'Backend Developer' },
-      { label: 'Python machine learning', value: 'Python machine learning' },
-      { label: 'Other', value: 'Other' }
+      { label: 'backend Developer', value: 'backend Developer' },
+      { label: 'python machine learning', value: 'Python machine learning' },
+      { label: 'Other', value: 'other' }
     ];
     return (
       <div className="create-profile">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Create personal profile</h1>
-              <p className="lead text-center">Please fill in your personal information, let me know more about you!</p>
-              <small className="d-block pb-3">* mean must fill</small>
+              <h1 className="display-4 text-center">Create personal information</h1>
+              <p className="lead text-center">Fill your personal document, let us know more about you!</p>
+              <small className="d-block pb-3">* have to fill</small>
+
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
-                 placeholder="* Profile Handle"
-                 name="handle"
-                 value={this.state.handle}
-                 onChange={this.onChange}
-                 error={errors.handle}
-                 info="this handle will be used to check data in backend, usually is your email address"
+                  placeholder="* Profile Handle"
+                  name="handle"
+                  value={this.state.handle}
+                  onChange={this.onChange}
+                  error={errors.handle}
+                  info="Here's handle is used to find data in backend interface, usually to write your email"
                 />
-                
+
                 <SelectListGroup
                   placeholder="Status"
                   name="status"
@@ -135,41 +161,39 @@ class CreateProfile extends Component {
                   value={this.state.company}
                   onChange={this.onChange}
                   error={errors.company}
-                  info="Can be your own company or your employed company"
+                  info="Can be your own or your company"
                 />
-
                 <TextFieldGroup
-                  placeholder="website"
+                  placeholder="Website"
                   name="website"
                   value={this.state.website}
                   onChange={this.onChange}
                   error={errors.website}
-                  info="Your own company's or your employed company's website address"
+                  info="Your own or your company's website"
                 />
-
                 <TextFieldGroup
-                  placeholder="Coordinate"
+                  placeholder="Coordinary"
                   name="location"
                   value={this.state.location}
                   onChange={this.onChange}
                   error={errors.location}
-                  info="Your curent city and suburban"
+                  info="Your city or suburban"
                 />
                 <TextFieldGroup
-                  placeholder="* programming laanguage skills"
+                  placeholder="* programming language skills"
                   name="skills"
-                  value="this.state.skills"
+                  value={this.state.skills}
                   onChange={this.onChange}
                   error={errors.skills}
-                  info="Please use dash to gap your Language (HTML, CSS, JavaScript, React)"
+                  info="Please use dash to gap your owned language (e.g: HTML,CSS,JavaScript,PHP)"
                 />
                 <TextFieldGroup
-                  placeholder="Github username"
+                  placeholder="Github Username"
                   name="githubusername"
                   value={this.state.githubusername}
                   onChange={this.onChange}
                   error={errors.githubusername}
-                  info="If you want to share your projects to public, you can fill your Github Username"
+                  info="If you want to share your project to public, you can fill your github username"
                 />
                 <TextAreaFieldGroup
                   placeholder="Self-introduction"
@@ -177,46 +201,44 @@ class CreateProfile extends Component {
                   value={this.state.bio}
                   onChange={this.onChange}
                   error={errors.bio}
-                  info="Introducing yourself"
+                  info="Introduce yourself"
                 />
+
                 <div className="mb-3">
-                  <button 
-                  className="btn btn-light"
-                  type="button"
-                  onClick={() => {
-                    //prevState 
-                    // this.setState({ displaySocialInputs: !this.state.displaySocialInputs })
-                    this.setState(prevState => ({
-                      displaySocialInputs: !prevState,displaySocialInputs
-                    }));
-                  }}
+                  <button
+                    className="btn btn-light"
+                    type="button"
+                    onClick={() => {
+                      this.setState(prevState => ({
+                        displaySocialInputs: !prevState.displaySocialInputs
+                      }));
+                    }}
                   >
-                    Add Social Account
+                    Add social account
                   </button>
                   <span className="text-muted">Options</span>
                 </div>
                 {socialInputs}
-                <input type="submit" value="submit" className="btn btn-info btn-block mt-4"/>
+                <input type="submit" value="submit" className="btn btn-info btn-block mt-4" />
+
               </form>
+
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }
 
-const mapStateToProps = (state) => ({
+CreateProfile.propTypes = {
+  profile: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+}
+
+const mapStateToProps = state => ({
   profile: state.profile,
   errors: state.errors
 })
 
-const mapDispatchToProps =(dispatch) => {
-  return {
-    createProfile: (params, history) => {
-      dispatch(createProfile(params, history))
-    }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(CreateProfile));
+export default connect(mapStateToProps, { createProfile })(withRouter(CreateProfile));

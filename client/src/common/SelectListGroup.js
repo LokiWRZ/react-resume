@@ -2,6 +2,7 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import classnames from 'classnames';
 
+
 const SelectListGroup = ({
   name,
   value,
@@ -15,16 +16,16 @@ const SelectListGroup = ({
   ));
   return (
     <div className="form-group">
-      <slecet
-      className={classnames('form-control form-control-lg', {
-        'is-invalid': error
-      })}
-      name={name}
-      value={value}
-      onChange={onChange}
+      <select
+        className={classnames('form-control form-control-lg', {
+          'is-invalid': error
+        })}
+        name={name}
+        value={value}
+        onChange={onChange}
       >
         {selectOptions}
-      </slecet>
+      </select>
       {info && <small className="form-text text-muted">{info}</small>}
       {error && (<div className="invalid-feedback">{error}</div>)}
     </div>

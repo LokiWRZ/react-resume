@@ -1,61 +1,101 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import TextFieldGroup from '../../common/TextAreaFieldGroup';
+import PropTypes from 'prop-types';
+import TextFieldGroup from '../../common/TextFieldGroup';
 import TextAreaFieldGroup from '../../common/TextAreaFieldGroup';
 import SelectListGroup from '../../common/SelectListGroup';
 import InputGroup from '../../common/InputGroup';
 import { createProfile, getCurrentProfile } from '../../actions/profileActions';
-import isEmpty from '../../vaildation/is-empty';
-
+import isEmpty from '../../validation/is-empty';
 class CreateProfile extends Component {
-  state = {
-    displaySocialInputs: false,
-    handle: '',
-    company: '',
-    website: '',
-    location: '',
-    status: '',
-    skills: '',
-    githubusername: '',
-    bio: '',
-    wechat: '',
-    QQ: '',
-    tengxunkt: '',
-    wangyikt: '',
-    errors: {}
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      displaySocialInputs: false,
+      handle: '',
+      company: '',
+      website: '',
+      location: '',
+      status: '',
+      skills: '',
+      githubusername: '',
+      bio: '',
+      wechat: '',
+      QQ: '',
+      tengxunkt: '',
+      wangyikt: '',
+      errors: {}
+    };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
   componentDidMount() {
     this.props.getCurrentProfile();
   }
-  onSubmit = (e) => {
+
+  onSubmit(e) {
     e.preventDefault();
-    let { displaySocialInputs, errors, ...profileData } = this.state
+
+    const profileData = {
+      handle: this.state.handle,
+      company: this.state.company,
+      website: this.state.website,
+      location: this.state.location,
+      status: this.state.status,
+      skills: this.state.skills,
+      githubusername: this.state.githubusername,
+      bio: this.state.bio,
+      wechat: this.state.wechat,
+      QQ: this.state.QQ,
+      tengxunkt: this.state.tengxunkt,
+      wangyikt: this.state.wangyikt,
+    };
+
+    // console.log(profileData);
+
     this.props.createProfile(profileData, this.props.history);
+
   }
 
   // life cycle function
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if(nextProps.errors) {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
       this.setState({
         errors: nextProps.errors
       })
     }
-    
-    if(nextProps.profile.profile) {
+
+    if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile;
-      profile.company = !isEmpty(profile.company) ? profile.company: '';
-      profile.website = !isEmpty(profile.website) ? profile.website: '';
-      profile.location = !isEmpty(profile.location) ? profile.location: '';
-      profile.githubusername = !isEmpty(profile.githubusername) ? profile.githubusername : '';
+
+      profile.company = !isEmpty(profile.company) ? profile.company : '';
+      profile.website = !isEmpty(profile.website) ? profile.website : '';
+      profile.location = !isEmpty(profile.location) ? profile.location : '';
+      profile.githubusername = !isEmpty(profile.githubusername)
+        ? profile.githubusername
+        : '';
       profile.bio = !isEmpty(profile.bio) ? profile.bio : '';
+
       profile.social = !isEmpty(profile.social) ? profile.social : {};
-      profile.wechat = !isEmpty(profile.social.wechat) ? profile.social.wechat : '';
-      profile.QQ = !isEmpty(profile.social.QQ) ? profile.social.QQ : '';
-      profile.tengxunkt = !isEmpty(profile.social.tengxunkt) ? profile.social.tengxunkt : '';
-      profile.wangyikt = !isEmpty(profile.social.wangyikt) ? profile.social.wangyikt : '';
+      profile.wechat = !isEmpty(profile.social.wechat)
+        ? profile.social.wechat
+        : '';
+      profile.QQ = !isEmpty(profile.social.QQ)
+        ? profile.social.QQ
+        : '';
+      profile.tengxunkt = !isEmpty(profile.social.tengxunkt)
+        ? profile.social.tengxunkt
+        : '';
+      profile.wangyikt = !isEmpty(profile.social.wangyikt)
+        ? profile.social.wangyikt
+        : '';
 
       const skillsCSV = profile.skills.join(",");
+
       this.setState({
         handle: profile.handle,
         company: profile.company,
@@ -71,19 +111,23 @@ class CreateProfile extends Component {
         wangyikt: profile.wangyikt
       })
     }
+
   }
 
-  onChange = (e) => {
+  onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
+
   render() {
     const { errors, displaySocialInputs } = this.state;
+
     let socialInputs;
-    if(displaySocialInputs) {
+
+    if (displaySocialInputs) {
       socialInputs = (
         <div>
           <InputGroup
-            placeholder="wechat public account"
+            placeholder="Wechat public account"
             name="wechat"
             icon="fab fa-weixin"
             value={this.state.wechat}
@@ -92,16 +136,16 @@ class CreateProfile extends Component {
           />
 
           <InputGroup
-           placeholder="QQ"
-           name="QQ"
-           icon="fab fa-qq"
-           value={this.state.QQ}
-           onChange={this.onChange}
-           error={errors.QQ}
+            placeholder="QQ"
+            name="QQ"
+            icon="fab fa-qq"
+            value={this.state.QQ}
+            onChange={this.onChange}
+            error={errors.QQ}
           />
 
           <InputGroup
-            placeholder="Tengxun online course"
+            placeholder="Tengxunkt"
             name="tengxunkt"
             icon="fab fa-wechat"
             value={this.state.tengxunkt}
@@ -110,9 +154,9 @@ class CreateProfile extends Component {
           />
 
           <InputGroup
-            placeholder="Wnagyi online course"
+            placeholder="Wnagyikt"
             name="wangyikt"
-            icon="fab fab-wangyi"
+            icon="fab fa-wechat"
             value={this.state.wangyikt}
             onChange={this.onChange}
             error={errors.wangyikt}
@@ -120,24 +164,25 @@ class CreateProfile extends Component {
         </div>
       );
     }
+
     const options = [
-      { label: "* please your occupation", value: "* please your occupation" },
+      { label: "* Please your occupation", value: "* Please select your occupation" },
       { label: 'Junior Developer', value: 'Junior Developer' },
       { label: 'Senior Developer', value: 'Senior Developer' },
       { label: 'HighDeveloper', value: 'HighDeveloper' },
       { label: 'Manager', value: 'Manager' },
-      { label: 'Backend Developer', value: 'Backend Developer' },
+      { label: 'backend Developer', value: 'backend Developer' },
       { label: 'python machine learning', value: 'Python machine learning' },
-      { label: 'Other', value: 'Other' }
+      { label: 'Other', value: 'other' }
     ];
     return (
       <div className="create-profile">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Edit personal profile</h1>
+              <h1 className="display-4 text-center">Edit personal info</h1>
 
-              <small className="d-block pb-3">* measn must fill</small>
+              <small className="d-block pb-3">* have to fill</small>
 
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -146,7 +191,7 @@ class CreateProfile extends Component {
                   value={this.state.handle}
                   onChange={this.onChange}
                   error={errors.handle}
-                  info="this handle is used to check data in backend interface, usually fill your email"
+                  info="Here's handle is used to find data in backend interface, usually to write your email"
                 />
 
                 <SelectListGroup
@@ -156,40 +201,40 @@ class CreateProfile extends Component {
                   onChange={this.onChange}
                   options={options}
                   error={errors.status}
-                  info="Please tell us your occupation"
+                  info="Please tell us your current occupation"
                 />
 
                 <TextFieldGroup
-                  placeholder="company"
+                  placeholder="Company"
                   name="company"
                   value={this.state.company}
                   onChange={this.onChange}
                   error={errors.company}
-                  info="Your own company or your employed company"
+                  info="Can be your own or your company"
                 />
                 <TextFieldGroup
-                  placeholder="website"
+                  placeholder="Website"
                   name="website"
                   value={this.state.website}
                   onChange={this.onChange}
                   error={errors.website}
-                  info="Your own company's website or your employed company's website"
+                  info="Your own or your company's website"
                 />
                 <TextFieldGroup
-                  placeholder="coordinary"
+                  placeholder="Coordinary"
                   name="location"
                   value={this.state.location}
                   onChange={this.onChange}
                   error={errors.location}
-                  info="Your current city or suburban"
+                  info="Your city or suburban"
                 />
                 <TextFieldGroup
-                  placeholder="* programming skills"
+                  placeholder="* programming language skills"
                   name="skills"
                   value={this.state.skills}
                   onChange={this.onChange}
                   error={errors.skills}
-                  info="Please dash to gap your language (E.G: HTML,CSS,JavaScript,PHP)"
+                  info="Please use dash to gap your owned language (e.g: HTML,CSS,JavaScript,PHP)"
                 />
                 <TextFieldGroup
                   placeholder="Github Username"
@@ -197,7 +242,7 @@ class CreateProfile extends Component {
                   value={this.state.githubusername}
                   onChange={this.onChange}
                   error={errors.githubusername}
-                  info="If you want to share your project to public, you can fill your Github Username"
+                  info="If you want to share your project to public, you can fill your github username"
                 />
                 <TextAreaFieldGroup
                   placeholder="Self-introduction"
@@ -205,7 +250,7 @@ class CreateProfile extends Component {
                   value={this.state.bio}
                   onChange={this.onChange}
                   error={errors.bio}
-                  info="Please yourself"
+                  info="Introduce yourself"
                 />
 
                 <div className="mb-3">
@@ -235,15 +280,11 @@ class CreateProfile extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    createProfile: (params, history) => {
-      dispatch(createProfile(params, history))
-    },
-    getCurrentProfile: () => {
-      dispatch(getCurrentProfile())
-    }
-  }
+CreateProfile.propTypes = {
+  createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -251,4 +292,4 @@ const mapStateToProps = state => ({
   errors: state.errors
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(CreateProfile));
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(withRouter(CreateProfile));

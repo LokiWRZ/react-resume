@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-//Personal experience and Personal Education
+
 class ProfileCreds extends Component {
   render() {
     const { experience, education } = this.props;
@@ -9,7 +9,7 @@ class ProfileCreds extends Component {
       <li key={exp._id} className="list-group-item">
         <h4>{exp.company}</h4>
         <p>
-          {exp.from} to {exp.to === '' ? 'Now' : exp.to}
+          {exp.from} to {exp.to === '' ? 'now' : exp.to}
         </p>
         <p>
           <strong>Role:</strong> {exp.title}
@@ -38,15 +38,15 @@ class ProfileCreds extends Component {
           {edu.from} to {edu.to === '' ? 'Now' : edu.to}
         </p>
         <p>
-          <strong>Degree: </strong> {edu.degree}
+          <strong>Education:</strong> {edu.degree}
         </p>
         <p>
-          <strong>Major: </strong> {edu.fieldofstudy}
+          <strong>Major:</strong> {edu.fieldofstudy}
         </p>
         <p>
           {edu.description === '' ? null : (
             <span>
-              <strong>Educational Performence: </strong> {edu.description}
+              <strong>On-school performance: </strong> {edu.description}
             </span>
           )}
         </p>
@@ -56,24 +56,24 @@ class ProfileCreds extends Component {
     return (
       <div className="row">
         <div className="col-md-6">
-          <h3 className="text-center text-info">Personal Experience</h3>
+          <h3 className="text-center text-info">Personal experience</h3>
           {expItems.length > 0 ? (
             <ul className="list-group">{expItems}</ul>
           ) : (
-            <p className="text-center">No information about personal experience</p>
-          )}
+              <p className="text-center">No personal experience information</p>
+            )}
         </div>
+
         <div className="col-md-6">
-          <h3 className="text-center text-info">Educational experience</h3>
+          <h3 className="text-center text-info">Education</h3>
           {eduItems.length > 0 ? (
-            <ul className="list-group">{}eduItems</ul>
+            <ul className="list-group">{eduItems}</ul>
           ) : (
-            <p className="text-center">No information about educational experience</p>
-          )}
+              <p className="text-center">No education information</p>
+            )}
         </div>
       </div>
     )
   }
 }
-
 export default ProfileCreds;

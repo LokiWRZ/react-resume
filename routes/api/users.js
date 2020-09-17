@@ -1,5 +1,5 @@
-// login & register
-const express =require("express");
+// @login & register 
+const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
@@ -9,35 +9,36 @@ const passport = require("passport");
 
 const User = require("../../models/User");
 
-// use valid function 
+// 引入验证方法
 const validateRegisterInput = require("../../validation/register");
-const validateLoginInptut = require("../../validation/login");
+const validateLoginInput = require("../../validation/login");
 
-// $route GET api/users/test
-// @desc returned required json data
+// $route  GET api/users/test
+// @desc   返回的请求的json数据
 // @access public
-router.get("/text", (req,res) => {
+router.get("/test", (req, res) => {
   res.json({ msg: "login works" })
 })
 
-// $route POST api/users/register
-// @desc returned required json data
+// $route  POST api/users/register
+// @desc   返回的请求的json数据
 // @access public
-router.post("/register", (req,res) => {
+router.post("/register", (req, res) => {
+
   const { errors, isValid } = validateRegisterInput(req.body);
 
-  // judge whether isValid passed
-  if(!isValid) {
+  // 判断isValid是否通过
+  if (!isValid) {
     return res.status(400).json(errors);
   }
 
-  // check whether have email in database
+  // 查询数据库中是否拥有邮箱
   User.findOne({ email: req.body.email })
-    .then((user) =>{
-      if(user) {
-        return res.status(400),json({ email: "Email has been registered!" })
+    .then((user) => {
+      if (user) {
+        return res.status(400).json({ email: "Email has been registered!" })
       } else {
-        const avatar = gravatar.url(req.body.email, { s: '200', r: 'pg', d:'mm'});
+        const avatar = gravatar.url(req.body.email, { s: '200', r: 'pg', d: 'mm' });
 
         const newUser = new User({
           name: req.body.name,
@@ -46,9 +47,9 @@ router.post("/register", (req,res) => {
           password: req.body.password
         })
 
-        bcrypt.genSalt(10, function (err,salt) {
+        bcrypt.genSalt(10, function (err, salt) {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if(err) throw err;
+            if (err) throw err;
 
             newUser.password = hash;
 
@@ -57,38 +58,40 @@ router.post("/register", (req,res) => {
               .catch(err => console.log(err));
           });
         });
+
+
       }
     })
 })
 
-// &route POST api/users/login
-// @desc  return token jwt passport
+// $route  POST api/users/login
+// @desc   返回token jwt passport
 // @access public
 
 router.post("/login", (req, res) => {
   const { errors, isValid } = validateLoginInput(req.body);
 
-  // judge whether isValid is passed
-  if(!isValid) {
+  // 判断isValid是否通过
+  if (!isValid) {
     return res.status(400).json(errors);
   }
 
   const email = req.body.email;
   const password = req.body.password;
-  // check database
+  // 查询数据库
   User.findOne({ email })
     .then(user => {
-      if(!user) {
-        return res.status(404).json({ email: "User is not existed!"});
+      if (!user) {
+        return res.status(404).json({ email: "User is not existed!" });
       }
 
-      // password matching
+      // 密码匹配
       bcrypt.compare(password, user.password)
         .then(isMatch => {
-          if(isMatch) {
+          if (isMatch) {
             const rule = { id: user.id, name: user.name, avatar: user.avatar };
-            jwt.sign(rule, keys.secretOrKey, { exporesIn: 3600 }, (err, token) => {
-              if(err) throw err;
+            jwt.sign(rule, keys.secretOrKey, { expiresIn: 3600 }, (err, token) => {
+              if (err) throw err;
               res.json({
                 success: true,
                 token: "Bearer " + token
@@ -96,14 +99,14 @@ router.post("/login", (req, res) => {
             })
             // res.json({msg:"success"});
           } else {
-            return res.status(400).json({ password: "Password is incorrect!"});
+            return res.status(400).json({ password: "Password is incorrect!" });
           }
         })
     })
 })
 
-// $route GET api/users/current
-// @desc return current user
+// $route  GET api/users/current
+// @desc   return current user
 // @access Private
 router.get("/current", passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({

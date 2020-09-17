@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { getCurrentProfile, deleteAccout } from './../../actions/profileActions';
+import { getCurrentProfile, deleteAccout } from '../../actions/profileActions';
 //load animation
 import Spinner from '../../common/Spinner';
 import ProfileActives from './ProfileActives';

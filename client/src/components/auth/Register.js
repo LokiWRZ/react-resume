@@ -1,85 +1,114 @@
+/**
+ * 米修在线
+ * 微信公众号: 米修在线
+ * vw: 27732357
+ * qq: 27732357
+ * 群: 27732356
+ */
+
 import React, { Component } from 'react';
-// define the type transferred by reduce
-import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+
+/** react-redux 的两个最主要功能
+ *  connect: 用于从 UI 组件生成容器组件, 将两种组件连起来
+ *  Provider: 可以让组件及子组件拿到state
+ */
 import { connect } from 'react-redux';
 import { registerUser } from '../../actions/authActions';
-import { withRouter } from 'react-router-dom';
+import { PropTypes } from 'prop-types';
 import TextFieldGroup from '../../common/TextFieldGroup';
 
-//import classnames from 'classnames'
-export class Register extends Component {
-  constructor(props) {
-    super(props);
+
+class Register extends Component {
+  constructor() {
+    super();
     this.state = {
       name: '',
       email: '',
       password: '',
-      password2: "",
+      password2: '',
       errors: {}
-    }
+    };
+
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
-  onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value })
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
-  onSubmit = (e) => {
-    e.preventDefault()
+
+  onSubmit(e) {
+    e.preventDefault();
     const newUser = {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
-      password2: this.state.password2,
-    }
-    this.props.registerUser(newUser, this.props.history)
+      password2: this.state.password2
+    };
+
+    // 调用action
+    this.props.registerUser(newUser, this.props.history);
   }
-  //render page
+
   componentDidMount() {
-    //if auth, jump to control page
-    if(this.props.auth.isAuthenticated) {
-      this.props.history.push('/dashboard')
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
     }
   }
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if(nextProps.errors) {
-      this.setState({ errors: nextProps.errors })
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({
+        errors: nextProps.errors
+      })
     }
   }
+
+
   render() {
-    const {errors } = this.state;
-    return(
+    const { errors } = this.state;
+    // const { user } = this.props.auth;
+
+    return (
       <div className="register">
+        {/* {user ? user.name : null} */}
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Register</h1>
-              <p className="lead text-center">Create New Account</p>
+              <p className="lead text-center">Create new account</p>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
                   placeholder="username"
                   name="name"
                   value={this.state.name}
                   onChange={this.onChange}
-                  errpr={errors.name}
+                  error={errors.name}
                 />
+
                 <TextFieldGroup
                   type="email"
-                  placeholder="email address"
+                  placeholder="email"
                   name="email"
                   value={this.state.email}
                   onChange={this.onChange}
                   error={errors.email}
-                  info="We use 'gravatar' global avatars, if need avator showed, please use the email registered in gravatar "
+                  info="We use gravatar global certified avatar, if want to display avatar, use email whic have registered in gravatar"
                 />
+
                 <TextFieldGroup
                   type="password"
-                  placeholder="pwd"
+                  placeholder="password"
                   name="password"
                   value={this.state.password}
                   onChange={this.onChange}
                   error={errors.password}
                 />
+
                 <TextFieldGroup
                   type="password"
-                  placeholder="cf pwd"
+                  placeholder="password2"
                   name="password2"
                   value={this.state.password2}
                   onChange={this.onChange}
@@ -90,27 +119,22 @@ export class Register extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }
-// Get the property value of initalState which have defined in actions in reduce
+
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+}
+
+// 将状态映射为属性
 const mapStateToProps = (state) => ({
   auth: state.auth,
   errors: state.errors
 })
-//dispatch function
-const mapDispatchToProps = (dispatch) => {
-  return {
-    registerUser: (params, history) => {
-      dispatch(registerUser(params,history))
-    }
-  }
-}
-//Define the type transferred by reduce
-Register.propTypes = {
-  registerUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
-}
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Register))
+
+// export default Register;
+export default connect(mapStateToProps, { registerUser })(withRouter(Register));

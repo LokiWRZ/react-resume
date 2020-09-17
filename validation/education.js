@@ -1,7 +1,7 @@
 const Validator = require('validator');
 const isEmpty = require("./is-empty");
 
-module.exports = function validateEduvationInput(data) {
+module.exports = function validateEducationInput(data) {
   let errors = {};
 
   data.school = !isEmpty(data.school) ? data.school : '';
@@ -9,25 +9,26 @@ module.exports = function validateEduvationInput(data) {
   data.fieldofstudy = !isEmpty(data.fieldofstudy) ? data.fieldofstudy : '';
   data.from = !isEmpty(data.from) ? data.from : '';
 
+
+
   if(Validator.isEmpty(data.school)){
-    errors.school = "School cannot be null!";
+    errors.school = "Personal education school cannot be null!";
   }
 
   if(Validator.isEmpty(data.degree)){
-    errors.degree = "Degree of personal education cannot be null!";
+    errors.degree = "Personal educaiton degree cannot be null!";
   }
 
   if(Validator.isEmpty(data.fieldofstudy)){
-    errors.fieldofstudy = "field of study of personal education cannot be null!";
+    errors.fieldofstudy = "Personal education fieldofstudy cannot be null!";
   }
 
   if(Validator.isEmpty(data.from)){
-    errors.from = "Form of personal education cannot be null!";
+    errors.from = "Personal education from cannot be null!";
   }
 
   return {
     errors,
     isValid:isEmpty(errors)
   };
-
 }

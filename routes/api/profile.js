@@ -8,26 +8,26 @@ const User = require("../../models/User");
 
 const validateProfileInput = require("../../validation/profile");
 const validateExperienceInput = require("../../validation/experience");
-const validateEducationInput = require("../..validation/education");
-const profile = require("../../validation/profile");
+const validateEducationInput = require("../../validation/education");
 
-// $route GET api/profile/test
-// @DESC  returned required json data
+
+// $route  GET api/profile/test
+// @desc   返回的请求的json数据
 // @access public
-router.get("/test",(req, res) => {
+router.get("/test", (req, res) => {
   res.json({ msg: "profile works" })
 })
 
-// $route GET api/profile
-// @desc get personal info of the current logined user
+// $route  GET api/profile
+// @desc   获取当前登录用户的个人信息
 // @access private
 router.get("/", passport.authenticate('jwt', { session: false }), (req, res) => {
   const errors = {};
-  Profile.findOne({ iser: req.user.id })
-    .populate('user',["name","avatar"])
+  Profile.findOne({ user: req.user.id })
+    .populate('user', ["name", "avatar"])
     .then((profile) => {
-      if(!profile) {
-        errors.noprofile = "This user's info is not existed!";
+      if (!profile) {
+        errors.noprofile = "This user's inofrmation is not existed~!";
         return res.status(404).json(errors);
       }
 
@@ -35,14 +35,15 @@ router.get("/", passport.authenticate('jwt', { session: false }), (req, res) => 
     }).catch(err => res.status(404).json(err));
 })
 
+
 // $route  POST api/profile
-// @desc   create and edit the interface of personal info
+// @desc   创建和编辑个人信息接口
 // @access private
 router.post("/", passport.authenticate('jwt', { session: false }), (req, res) => {
-  const { errors, isValid} = validateProfileInput(req.body);
+  const { errors, isValid } = validateProfileInput(req.body);
 
-  //judge whether isValid is passed
-  if(!isValid) {
+  // 判断isValid是否通过
+  if (!isValid) {
     return res.status(400).json(errors);
   }
 
@@ -54,11 +55,12 @@ router.post("/", passport.authenticate('jwt', { session: false }), (req, res) =>
   if (req.body.location) profileFields.location = req.body.location;
   if (req.body.status) profileFields.status = req.body.status;
 
+
   if (req.body.bio) profileFields.bio = req.body.bio;
   if (req.body.githubusername) profileFields.githubusername = req.body.githubusername;
 
-  // skills - array transmation
-  if (typeof req.body.skills !=="undefined") {
+  // skills - 数组转换
+  if (typeof req.body.skills !== "undefined") {
     profileFields.skills = req.body.skills.split(",");
   }
 
@@ -71,32 +73,33 @@ router.post("/", passport.authenticate('jwt', { session: false }), (req, res) =>
 
   Profile.findOne({ user: req.user.id }).then(profile => {
     if (profile) {
-      // user info exist, excute update function
+      // 用户信息存在, 执行更新方法
       Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true }).then(profile => res.json(profile));
     } else {
-      // user info is not exist, excute create function
+      // 用户信息不存在, 执行创建方法
       Profile.findOne({ handle: profileFields.handle }).then(profile => {
         if (profile) {
-          errors.handle = "This user's handle info is existed, please don't create duplicate!";
+          errors.handle = "This user's handle personal information is existed, please don't create again!";
           res.status(400).json(errors);
         }
-        
+
         new Profile(profileFields).save().then(profile => res.json(profile));
       })
     }
   })
-}) 
+
+})
 
 // $route  GET api/profile/handle/:handle
-// @desc   get personal info by handle
+// @desc   通过handle获取个人信息
 // @access public
 router.get("/handle/:handle", (req, res) => {
   const errors = {};
   Profile.findOne({ handle: req.params.handle })
-    .populate('user', ["name","avatar"])
+    .populate('user', ["name", "avatar"])
     .then(profile => {
-      if(!profile) {
-        errors.noprofile = " Cannot find this user's info";
+      if (!profile) {
+        errors.noprofile = "Haven't find this user's information";
         res.status(404).json(errors);
       }
 
@@ -105,79 +108,81 @@ router.get("/handle/:handle", (req, res) => {
     .catch(err => res.status(404).json(err));
 })
 
-// $route  Get api/profile/user/:user_id
-// @desc   get user info by user_id
+// $route  GET api/profile/user/:user_id
+// @desc   通过user_id获取个人信息
 // @access public
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
   Profile.findOne({ user: req.params.user_id })
-    .populate('user',["name","avatar"])
+    .populate('user', ["name", "avatar"])
     .then(profile => {
-      if(!profile) {
-        errors.noprofile = "Cannot find this user's info";
+      if (!profile) {
+        errors.noprofile = "Haven't find this user's information";
         res.status(404).json(errors);
       }
 
       res.json(profile);
     })
     .catch(err => res.status(404).json(err));
-  })
+})
 
-  // $route  Get api/profile/all
-  // @desc   get all people's info
-  // @access public
-  router.get("/all", (req, res) => {
-    const errors = {};
-    Profile.find()
-      .populate('user',["user","avatar"])
-      .then(profiles => {
-        if(!profile) {
-          errors.noprofile = "No any users' info";
-          res.status(404).json(errors);
-        }
+// $route  GET api/profile/all
+// @desc   获取所有人的信息
+// @access public
+router.get("/all", (req, res) => {
+  const errors = {};
+  Profile.find()
+    .populate('user', ["name", "avatar"])
+    .then(profiles => {
+      if (!profiles) {
+        errors.noprofile = "No user information";
+        res.status(404).json(errors);
+      }
 
-        res.json(profiles);
-      })
-      .catch(err => res.status(4040).json(err));
-  })
+      res.json(profiles);
+    })
+    .catch(err => res.status(404).json(err));
+})
 
-  // $route  POST api/profile/experence
-  // @desc   Add personal experience
-  // @access Private
-  router.post("/experience", passport.authenticate('jwt', { session: false }), (req, res) => {
-    const { errors, isValid } = validateExperienceInput(req.body);
 
-    // Judge whether isValid is passed
-    if(!isValid) {
-      return res.status(400).json(errors);
-    } 
+// $route  POST api/profile/experience
+// @desc   添加个人经历
+// @access Private
+router.post("/experience", passport.authenticate('jwt', { session: false }), (req, res) => {
+  const { errors, isValid } = validateExperienceInput(req.body);
 
-    Profile.findOne({ user: req.user.id })
-      .then(profile => {
-        const newExp = {
-          title: req.body.title,
-          company: req.body.company,
-          location: req.body.location,
-          from: req.body.from,
-          to: req.body.to,
-          current: req.body.current,
-          description: req.body.description,
-        }
+  // 判断isValid是否通过
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
 
-        profile.experience.unshift(newExp);
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      const newExp = {
+        title: req.body.title,
+        company: req.body.company,
+        location: req.body.location,
+        from: req.body.from,
+        to: req.body.to,
+        current: req.body.current,
+        description: req.body.description,
+      }
 
-        profile.save().then(profile => res.json(profile));
-      })
-  })
+      profile.experience.unshift(newExp);
+
+      profile.save().then(profile => res.json(profile));
+    })
+})
+
 
 // $route  POST api/profile/education
-// @desc   Add personal education
+// @desc   添加个人学历
 // @access Private
-router.post("/educatin", passport.authenticate('jwt', { session: false }), (req, res) => {
+router.post("/education", passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateEducationInput(req.body);
 
-  // judge whether isValid is passed
-  if(!isValid) {
+  // 判断isValid是否通过
+  if (!isValid) {
     return res.status(400).json(errors);
   }
 
@@ -199,10 +204,11 @@ router.post("/educatin", passport.authenticate('jwt', { session: false }), (req,
     })
 })
 
+
 // $route  DELETE api/profile/experience/:epx_id
-// @desc   Delete personal experience
+// @desc   删除个人经历
 // @access Private
-router.delete("/experience/:epx_id", passport.authenticate('jwt', { session: false }), (req,res) => {
+router.delete("/experience/:epx_id", passport.authenticate('jwt', { session: false }), (req, res) => {
 
   Profile.findOne({ user: req.user.id })
     .then(profile => {
@@ -210,16 +216,18 @@ router.delete("/experience/:epx_id", passport.authenticate('jwt', { session: fal
         .map(item => item.id)
         .indexOf(req.params.epx_id);
 
-      profile.education.splice(removeIndex, 1);
+      profile.experience.splice(removeIndex, 1);
+
+      profile.save().then(profile => res.json(profile));
     })
     .catch(err => res.status(404).json(err));
 })
 
 // $route  DELETE api/profile/education/:edu_id
-// @desc   delete personal education
+// @desc   删除个人学历
 // @access Private
-router.delete("/education/:edu_id", passport.authenticate('jwt', { sessopm: false }), (req, res) => {
-  
+router.delete("/education/:edu_id", passport.authenticate('jwt', { session: false }), (req, res) => {
+
   Profile.findOne({ user: req.user.id })
     .then(profile => {
       const removeIndex = profile.experience
@@ -234,9 +242,9 @@ router.delete("/education/:edu_id", passport.authenticate('jwt', { sessopm: fals
 })
 
 // $route  DELETE api/profile
-// @desc   Delete whole user
+// @desc   删除整个用户
 // @access Private
-router.delete("/", passprot.authenticate('jwt', { session: false }), (req, res) => {
+router.delete("/", passport.authenticate('jwt', { session: false }), (req, res) => {
 
   Profile.findOneAndRemove({ user: req.user.id })
     .then(() => {

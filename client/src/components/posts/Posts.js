@@ -1,30 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
 import PostForm from './PostForm';
 import { getPosts } from '../../actions/postActions';
 import Spinner from '../../common/Spinner';
 import PostFeed from './PostFeed';
-// comments list
-export class Posts extends Component {
+
+class Posts extends Component {
   componentDidMount() {
-    // require content of like
-    this.props.getPosts()
+    this.props.getPosts();
   }
+
   render() {
     const { posts, loading } = this.props.post;
+
     let postContent;
-    // if loading or post is null, display loading animation
-    if(posts === null || loading) postContent = <Spinner />
-    // loading content of comments
-    else postContent = <PostFeed posts={posts} />
+
+    if (posts === null || loading) {
+      postContent = <Spinner />
+    } else {
+      postContent = <PostFeed posts={posts} />
+    }
+
     return (
       <div className="feed">
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              {/**display comment list */}
+              {/* 展示评论表单Display comment list */}
               <PostForm />
-              {/**display like comment */}
+              {/* Display like context */}
               {postContent}
             </div>
           </div>
@@ -34,16 +39,12 @@ export class Posts extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  post: state.post
-})
-
-const mapDispatchToProps = dispatch => {
-  return {
-    getPosts: () => {
-      dispatch(getPosts())
-    }
-  }
+Posts.propTypes = {
+  getPosts: PropTypes.func.isRequired,
+  post: PropTypes.object.isRequired
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (Posts)
+const mapStateToProps = state => ({
+  post: state.post
+})
+export default connect(mapStateToProps, { getPosts })(Posts);

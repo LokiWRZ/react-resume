@@ -1,20 +1,23 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+// rcc: react class compnent
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
+import { PropTypes } from 'prop-types';
 import { clearCurrentProfile } from '../../actions/profileActions';
 
-export class Navbar extends Component {
-  onLogoutClick = (e) => {
+
+class Navbar extends Component {
+  onLogoutClick(e) {
     e.preventDefault();
-    // clear user's info
     this.props.clearCurrentProfile();
-    this.props.LogoutUser();
-    window.location.href = "/login"
+    this.props.logoutUser();
   }
+
   render() {
+
     const { isAuthenticated, user } = this.props.auth;
-    // auth status
+
     const authLinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
@@ -28,32 +31,34 @@ export class Navbar extends Component {
           </Link>
         </li>
         <li className="nav-item">
-          <span className="nav-link" onClick={this.onLogoutClick}>
-            <img style={{ width:'25px', marginRight: '5px' }} className="rounded-circle" src={user.avatar} alt={user.name}/>Exit
-          </span>
+          <a href="" className="nav-link" onClick={this.onLogoutClick.bind(this)}>
+            <img style={{ width: '25px', marginRight: '5px' }} className="rounded-circle" src={user.avatar} alt={user.name} /> Logout
+          </a>
         </li>
       </ul>
     )
+
     const guestLink = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link className="nav-link" to="/register">
-            register
+            Register
           </Link>
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/login">
-            login
+            Login
           </Link>
         </li>
       </ul>
     )
+
     return (
       <div>
         <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
           <div className="container">
             <Link className="navbar-brand" to="/">
-              My Front-end
+              FrontEnd Online
             </Link>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav">
               <span className="navbar-toggler-icon"></span>
@@ -62,8 +67,7 @@ export class Navbar extends Component {
             <div className="collapse navbar-collapse" id="mobile-nav">
               <ul className="navbar-nav mr-auto">
                 <li className="nav-item">
-                  <Link className="nav-link" to="/profiles">
-                    Developers
+                  <Link className="nav-link" to="/profiles">Developer
                   </Link>
                 </li>
               </ul>
@@ -72,25 +76,19 @@ export class Navbar extends Component {
             </div>
           </div>
         </nav>
-      </div> 
+      </div>
     )
   }
 }
-//// Get the property value of initalState which have defined in actions in reduce
-const mapStateToProps = (state) => ({
-  auth: state.auth,
 
-})
-// dispatch function
-const mapDispatchToProps = (dispatch) => {
-  return {
-    LogoutUser: () => {
-      dispatch(logoutUser())
-    },
-    clearCurrentProfile: () => {
-      dispatch(clearCurrentProfile())
-    }
-  }
+Navbar.propTypes = {
+  logoutUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Navbar);
+// state to props 
+const mapStateToProps = (state) => ({
+  auth: state.auth
+})
+
+export default connect(mapStateToProps, { logoutUser, clearCurrentProfile })(Navbar);

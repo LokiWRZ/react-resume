@@ -1,51 +1,49 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { BrowserRouter as Router, ROute, Link } from 'react-router-dom';
+import React, { Component } from 'react'
 import classnames from 'classnames';
+import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
+import { Link } from 'react-router-dom';
 import { deletePost, addLike, removeLike } from '../../actions/postActions';
 
-// Like Component
-export class PostItem extends Component {
-  state = {
-    errors: {}
+class PostItem extends Component {
+
+  onDeleteClick(id) {
+    this.props.deletePost(id);
   }
-  componentWillReceiveProps(newProps) {
-    if(newProps.errors) {
-      this.setState({ errors: newProps.errors });
+
+  onLikeClick(id) {
+    this.props.addLike(id);
+  }
+
+  onUnlikeClick(id) {
+    this.props.removeLike(id);
+  }
+
+  findUserLike(likes) {
+    const { auth } = this.props;
+
+    if (likes.filter(like => like.user === auth.user.id).length > 0) {
+      return true;
+    } else {
+      return false;
     }
   }
-  // delete comments
-  onDeleteClick = (id) => {
-    this.props.deletePost(id)
-  }
-  // like
-  onLikeClick(id) {
-    this.props.addLike(id)
-  }
-  // Like pattern
-  findUserLike = (likes) => {
-    const { auth } = this.props
-    // match user's id whether have like
-    if(likes.filter(like => like.user === auth.user.id).length > 0) return true
-    else return false
-  }
-  // Cancel like
-  onUnlikeClick(id) {
-    this.props.removeLike(id)
-  }
+
   render() {
-    //get params from parent component
-    const { post, auth, showActions } = this.props
+    const { post, auth, showActions } = this.props;
     return (
-      <div className="card card-body mb3">
+      <div className="card card-body mb-3">
         <div className="row">
           <div className="col-md-2">
             <a href="profile.html">
-              <img src={post.avatar} alt="" className="rounded-circle d-nonse d-md-block"/>
+              <img className="rounded-circle d-nonse d-md-block" src={post.avatar}
+                alt="" />
             </a>
+            <br />
+            <p className="text-center">{post.name}</p>
           </div>
           <div className="col-md-10">
-            <p className="lead">{post.name}</p>
+            <p className="lead">{post.text}</p>
             {
               showActions ? (
                 <span>
@@ -58,23 +56,23 @@ export class PostItem extends Component {
                   <button onClick={this.onUnlikeClick.bind(this, post._id)} type="button" className="btn btn-light mr-1">
                     <i className="text-secondary fas fa-thumbs-down"></i>
                   </button>
-                  <Link to={`/post/${post._id}`} className="btn but-info mr-1">
-                    Encouraging comments
+                  <Link to={`/post/${post._id}`} className="btn btn-info mr-1">
+                    Encourage
                   </Link>
                   {
-                    // judge whether the Login Id is same as the comment Id, if same, can delete it
                     post.user === auth.user.id ? (
-                      <button 
-                      onClick={() => this.onDeleteClick(post._id)}
-                      type="button"
-                      className="btn btn-danger mr-1">
+                      <button
+                        onClick={this.onDeleteClick.bind(this, post._id)}
+                        type="button"
+                        className="btn btn-danger mr-1">
                         Delete
-                      </button>
+                </button>
                     ) : null
                   }
                 </span>
               ) : null
             }
+
           </div>
         </div>
       </div>
@@ -85,23 +83,16 @@ export class PostItem extends Component {
 PostItem.defaultProps = {
   showActions: true
 }
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-  errors: state.errors
-})
 
-const mapDispatchToProps = dispatch => {
-  return {
-    deletePost: (id) => {
-      dispatch(deletePost(id))
-    },
-    addLike: (id) => {
-      dispatch(addLike(id))
-    },
-    removeLike: (id) => {
-      dispatch(removeLike(id))
-    },
-  }
+PostItem.propTypes = {
+  addLike: PropTypes.func.isRequired,
+  removeLike: PropTypes.func.isRequired,
+  deletePost: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostItem);
+const mapStateToProps = state => ({
+  auth: state.auth
+})
+export default connect(mapStateToProps, { deletePost, addLike, removeLike })(PostItem);

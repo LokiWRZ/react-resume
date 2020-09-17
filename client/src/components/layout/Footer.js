@@ -1,11 +1,11 @@
-/// rfc: react function component
-import React from 'react';
+// rfc: react function component
+import React from 'react'
 
 export default () => {
   return (
     <div>
-      <footer className="bg-dark text-white mt-S p-4 text-center">
-        Copy right &copy; 2019 My Front-end
+      <footer className="bg-dark text-white mt-5 p-4 text-center">
+        Copyright &copy; 2020 FrontEnd Online
       </footer>
     </div>
   )

@@ -8,17 +8,21 @@ module.exports = function validateExperienceInput(data) {
   data.company = !isEmpty(data.company) ? data.company : '';
   data.from = !isEmpty(data.from) ? data.from : '';
 
+
+
   if(Validator.isEmpty(data.title)){
-    errors.title = "Title of personal experience cannot be null!";
+    errors.title = "Personal experience's title cannot be null!";
   }
 
   if(Validator.isEmpty(data.company)){
-    errors.company = "Company of personal experience cannot be null!";
+    errors.company = "Personal experience's company cannot be null!";
   }
 
   if(Validator.isEmpty(data.from)){
-    errors.from = "From of personal experience cannot be null!";
+    errors.from = "Personal experienece's from cannot be null!";
   }
+
+
 
   return {
     errors,
